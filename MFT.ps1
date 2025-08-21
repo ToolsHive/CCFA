@@ -92,22 +92,27 @@ function Success($Message) {
 #                               Script Output
 # ============================================================================
 
+[System.Console]::Clear()
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Write-Host ""
-Write-Host "==============================================" -ForegroundColor $Global:CYAN
-Write-Host "  Forensic Analysis Script" -ForegroundColor $Global:GREEN -NoNewline
-Write-Host " (v$Global:ScriptVersion)" -ForegroundColor $Global:YELLOW
-Write-Host "==============================================" -ForegroundColor $Global:CYAN
+Write-Host "=============================================" -ForegroundColor $Global:CYAN
+Write-Host "        	Forensic Tools" -ForegroundColor $Global:GREEN
+Write-Host "=============================================" -ForegroundColor $Global:CYAN
 Write-Host ""
 
-Info     "Author        : $Global:ScriptAuthor"
-Info     "Version       : $Global:ScriptVersion"
-Success     "Description   : $Global:ScriptDescription"
-Debug "Tools Root    : $Global:ToolsRoot"
-Debug "MFTECmd Folder: $Global:MFTECmdFolder"
-Debug "Executable    : $Global:MFTECmdExePath"
-Debug "Download URL  : $Global:MFTECmdDownloadUrl"
-Info     "Output Dir    : $Global:OutputDirectory"
+# Pretty metadata output
+Write-Host ( "AUTHOR")      -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:Bold$Global:ScriptAuthor$Global:Reset"      -ForegroundColor $Global:WHITE
 
-Write-Host ""
-Warning "⚠ Ensure `$MFT and `$MFTMirr are extracted with FTK Imager before running full analysis."
+Write-Host ("VERSION")     -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:Bold$Global:ScriptVersion$Global:Reset"     -ForegroundColor $Global:WHITE
+
+Write-Host ("DESCRIPTION") -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:Bold$Global:ScriptDescription$Global:Reset" -ForegroundColor $Global:WHITE
+
+Write-Host ("TOOLS ROOT")  -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:Bold$Global:ToolsRoot$Global:Reset"         -ForegroundColor $Global:WHITE
+
+Write-Host ("OUTPUT DIR")  -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:Bold$Global:OutputDirectory$Global:Reset"   -ForegroundColor $Global:WHITE
 Write-Host ""
