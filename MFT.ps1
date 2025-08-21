@@ -43,12 +43,71 @@ $Global:MFTECmdDownloadUrl = "https://download.ericzimmermanstools.com/MFTECmd.z
 # Input / Output Paths
 $Global:OutputDirectory = (Get-Location).Path
 
-#  Script Output
-Write-Host "Author        : $Global:ScriptAuthor"
-Write-Host "Version       : $Global:ScriptVersion"
-Write-Host "Description   : $Global:ScriptDescription"
-Write-Host "Tools Root    : $Global:ToolsRoot"
-Write-Host "MFTECmd Folder: $Global:MFTECmdFolder"
-Write-Host "Executable    : $Global:MFTECmdExePath"
-Write-Host "Download URL  : $Global:MFTECmdDownloadUrl"
-Write-Host "Output Dir    : $Global:OutputDirectory"
+# ============================================================================
+#                               Colors and Formatting
+# ============================================================================
+
+$Global:RED    = "Red"
+$Global:GREEN  = "Green"
+$Global:YELLOW = "Yellow"
+$Global:CYAN   = "Cyan"
+$Global:PURPLE = "Magenta"
+$Global:WHITE  = "White"
+$Global:BLACK  = "Black"
+
+# ANSI formatting
+$Global:Reset     = "`e[0m"
+$Global:Bold      = "`e[1m"
+$Global:Dim       = "`e[2m"
+$Global:Underline = "`e[4m"
+$Global:Blink     = "`e[5m"
+$Global:Reverse   = "`e[7m"
+$Global:Hidden    = "`e[8m"
+
+# ============================================================================
+#                               Helper Functions
+# ============================================================================
+
+function Info($Message) {
+	Write-Host "$Global:Bold[INFO]$Global:Reset $Message" -ForegroundColor $Global:CYAN
+}
+
+function Warning($Message) {
+	Write-Host "$Global:Bold[WARN]$Global:Reset $Message" -ForegroundColor $Global:YELLOW
+}
+
+function Error($Message) {
+	Write-Host "$Global:Bold[ERROR]$Global:Reset $Message" -ForegroundColor $Global:RED
+}
+
+function Debug($Message) {
+	Write-Host "$Global:Bold[DEBUG]$Global:Reset $Message" -ForegroundColor $Global:PURPLE
+}
+
+function Success($Message) {
+	Write-Host "$Global:Bold[SUCCESS]$Global:Reset $Message" -ForegroundColor $Global:GREEN
+}
+
+# ============================================================================
+#                               Script Output
+# ============================================================================
+
+Write-Host ""
+Write-Host "==============================================" -ForegroundColor $Global:CYAN
+Write-Host "  Forensic Analysis Script" -ForegroundColor $Global:GREEN -NoNewline
+Write-Host " (v$Global:ScriptVersion)" -ForegroundColor $Global:YELLOW
+Write-Host "==============================================" -ForegroundColor $Global:CYAN
+Write-Host ""
+
+Info     "Author        : $Global:ScriptAuthor"
+Info     "Version       : $Global:ScriptVersion"
+Success     "Description   : $Global:ScriptDescription"
+Debug "Tools Root    : $Global:ToolsRoot"
+Debug "MFTECmd Folder: $Global:MFTECmdFolder"
+Debug "Executable    : $Global:MFTECmdExePath"
+Debug "Download URL  : $Global:MFTECmdDownloadUrl"
+Info     "Output Dir    : $Global:OutputDirectory"
+
+Write-Host ""
+Warning "⚠ Ensure `$MFT and `$MFTMirr are extracted with FTK Imager before running full analysis."
+Write-Host ""
