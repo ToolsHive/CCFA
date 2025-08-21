@@ -55,42 +55,56 @@ $Global:PURPLE = "Magenta"
 $Global:WHITE  = "White"
 $Global:BLACK  = "Black"
 
-# ANSI formatting
-$Global:Reset     = "`e[0m"
-$Global:Bold      = "`e[1m"
-$Global:Dim       = "`e[2m"
-$Global:Underline = "`e[4m"
-$Global:Blink     = "`e[5m"
-$Global:Reverse   = "`e[7m"
-$Global:Hidden    = "`e[8m"
-
 # ============================================================================
 #                               Helper Functions
 # ============================================================================
 
 function Info($Message) {
-	Write-Host "$Global:Bold[INFO]$Global:Reset $Message" -ForegroundColor $Global:CYAN
+	Write-Host "[INFO] $Message" -ForegroundColor $Global:CYAN
 }
 
 function Warning($Message) {
-	Write-Host "$Global:Bold[WARN]$Global:Reset $Message" -ForegroundColor $Global:YELLOW
+	Write-Host "[WARN] $Message" -ForegroundColor $Global:YELLOW
 }
 
 function Error($Message) {
-	Write-Host "$Global:Bold[ERROR]$Global:Reset $Message" -ForegroundColor $Global:RED
+	Write-Host "[ERROR] $Message" -ForegroundColor $Global:RED
 }
 
 function Debug($Message) {
-	Write-Host "$Global:Bold[DEBUG]$Global:Reset $Message" -ForegroundColor $Global:PURPLE
+	Write-Host "[DEBUG] $Message" -ForegroundColor $Global:PURPLE
 }
 
 function Success($Message) {
-	Write-Host "$Global:Bold[SUCCESS]$Global:Reset $Message" -ForegroundColor $Global:GREEN
+	Write-Host "[SUCCESS] $Message" -ForegroundColor $Global:GREEN
 }
 
 # ============================================================================
 #                               Script Output
 # ============================================================================
+
+$currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = New-Object Security.Principal.WindowsPrincipal($currentIdentity)
+$isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+
+if (-not $isAdmin) {
+    if ($PSCommandPath) {
+        # Running from a file → relaunch that file as admin
+        $arguments = "-File `"$PSCommandPath`""
+    } else {
+        # Running inline (iwr ... | iex) → relaunch the script body
+        $scriptContent = $MyInvocation.MyCommand.Definition
+        $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($scriptContent))
+        $arguments = "-EncodedCommand $encoded"
+    }
+
+	if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+		Start-Process pwsh.exe -Verb RunAs -ArgumentList $arguments
+	}else{
+		Start-Process powershell.exe -Verb RunAs -ArgumentList $arguments
+	}
+	return
+}
 
 [System.Console]::Clear()
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -101,18 +115,23 @@ Write-Host "=============================================" -ForegroundColor $Glo
 Write-Host ""
 
 # Pretty metadata output
-Write-Host ( "AUTHOR")      -ForegroundColor $Global:CYAN -NoNewline
-Write-Host ": $Global:Bold$Global:ScriptAuthor$Global:Reset"      -ForegroundColor $Global:WHITE
+Write-Host ( "AUTHOR") -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ":" $Global:ScriptAuthor -ForegroundColor $Global:WHITE
 
-Write-Host ("VERSION")     -ForegroundColor $Global:CYAN -NoNewline
-Write-Host ": $Global:Bold$Global:ScriptVersion$Global:Reset"     -ForegroundColor $Global:WHITE
+Write-Host ("VERSION") -ForegroundColor $Global:CYAN -NoNewline
+Write-Host ": $Global:ScriptVersion" -ForegroundColor $Global:WHITE
 
 Write-Host ("DESCRIPTION") -ForegroundColor $Global:CYAN -NoNewline
-Write-Host ": $Global:Bold$Global:ScriptDescription$Global:Reset" -ForegroundColor $Global:WHITE
+Write-Host ": $Global:ScriptDescription" -ForegroundColor $Global:WHITE
 
 Write-Host ("TOOLS ROOT")  -ForegroundColor $Global:CYAN -NoNewline
-Write-Host ": $Global:Bold$Global:ToolsRoot$Global:Reset"         -ForegroundColor $Global:WHITE
+Write-Host ": $Global:ToolsRoot" -ForegroundColor $Global:WHITE
 
 Write-Host ("OUTPUT DIR")  -ForegroundColor $Global:CYAN -NoNewline
-Write-Host ": $Global:Bold$Global:OutputDirectory$Global:Reset"   -ForegroundColor $Global:WHITE
+Write-Host ": $Global:OutputDirectory" -ForegroundColor $Global:WHITE
 Write-Host ""
+
+if ($Host.Name -eq 'ConsoleHost') {
+	Write-Host "Press ENTER to exit.." -ForegroundColor $Global:CYAN
+	[void][System.Console]::ReadLine()
+}
