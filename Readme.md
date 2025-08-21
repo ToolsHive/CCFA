@@ -13,6 +13,61 @@ Welcome to the Certified Computer Forensic Analyst (CCFA) repository — a curat
 
 This repository serves as both a personal knowledge base and a practical toolkit, designed to support learning, research, and reference in the field of computer forensics and cybersecurity investigations.
 
+# 🛠️ Tools and Usage
+
+This repository contains various PowerShell scripts and resources to assist with forensic analysis and digital investigations.  
+Each script is self-contained with its own purpose, workflow, and usage details.
+
+## 📂 Scripts
+
+### 🔍 NTFS $MFT & $MFTMirr Analysis (`MFT.ps1`)
+
+This script automates the process of analyzing NTFS **Master File Table ($MFT)** and **$MFTMirr** files using [Eric Zimmerman's MFTECmd](https://ericzimmerman.github.io/).
+
+**Features:**
+- Automatically downloads and installs MFTECmd if not already present
+- Ensures the tool’s directory is added to the system `PATH`
+- Prompts the user to choose between analyzing `$MFT` or `$MFTMirr`
+- Accepts user-provided file paths
+- Generates structured CSV output for further analysis
+- Runs with administrative privileges when required
+
+**Workflow:**
+
+1. **Extract `$MFT` or `$MFTMirr`**  
+  Use a forensic imaging tool such as **FTK Imager** to extract the `$MFT` or `$MFTMirr` file from the disk image.
+
+2. **Download the Script**  
+  Download [`MFT.ps1`](https://github.com/ToolsHive/CCFA/blob/main/MFT.ps1) from GitHub.
+
+3. **Set Execution Policy**  
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+  > Open **PowerShell (Run as Administrator)** and allow script execution: 
+
+1. **Unblock the file**: 
+ 
+```powershell
+Unblock-File .\MFT.ps1
+``` 
+  > If you downloaded the script, unblock it to avoid security restrictions
+
+1. **Run the script**:
+ 
+```powershell
+ ./MFT.ps1
+```
+
+6. **Quick One-Liner Execution**
+
+```powershell
+iex (iwr "https://raw.githubusercontent.com/ToolsHive/CCFA/refs/heads/main/MFT.ps1")
+```
+  > Run the script directly from GitHub without downloading
+
+
 # 🤝 Contributing
 
 This is primarily a personal learning repository, but contributions are always welcome!
