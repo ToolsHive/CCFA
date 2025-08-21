@@ -131,7 +131,53 @@ Write-Host ("OUTPUT DIR")  -ForegroundColor $Global:CYAN -NoNewline
 Write-Host ": $Global:OutputDirectory" -ForegroundColor $Global:WHITE
 Write-Host ""
 
+if (-not (Test-Path $Global:ToolsRoot)) {
+	try {
+		Info "Creating tools directory: $($Global:ToolsRoot)"
+		New-Item -ItemType Directory -Path $Global:ToolsRoot -Force | Out-Null
+	}
+	catch {
+		Error "Failed to create Tools directory: $($Global:ToolsRoot)"
+        Warning "$($_.Exception.Message)"
+        exit 1
+	}
+}
+
+if (-not (Test-Path $Global:MFTECmdFolder)) {
+	try {
+		Info "Creating MFTECmd directory: $($Global:MFTECmdFolder)"
+		New-Item -ItemType Directory -Path $Global:MFTECmdFolder -Force | Out-Null
+	}
+	catch {
+		Error "Failed to create Tools directory: $($Global:MFTECmdFolder)"
+        Warning "$($_.Exception.Message)"
+        exit 1
+	}
+}
+
+if (Test-Path $MFTECmdExePath) {
+    Write-Host "MFTECmd is already present at $MFTECmdExePath"
+}
+else {
+	Info "Downloading MFTECmd..."
+	try {
+		$tempZip = "$env:TEMP\temp.zip"
+	
+		Invoke-WebRequest -Uri $Global:MFTECmdDownloadUrl -OutFile $tempZip -UseBasicParsing -ErrorAction Stop
+	
+		Warning "Extracting MFTECmd..."
+		Expand-Archive -Path $tempZip -DestinationPath $Global:MFTECmdFolder -Force
+		Remove-Item $tempZip -Force
+		Success "MFTECmd is ready at $Global:MFTECmdExePath"
+	}
+	catch {
+		Error "Error downloading or extracting MFTECmd: $($_.Exception.Message)"
+		return
+	}
+	
+}
+
 if ($Host.Name -eq 'ConsoleHost') {
-	Write-Host "Press ENTER to exit.." -ForegroundColor $Global:CYAN
+	Write-Host "Press ENTER to exit.." -ForegroundColor $Global:Yellow
 	[void][System.Console]::ReadLine()
 }
