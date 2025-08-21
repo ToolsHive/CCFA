@@ -156,7 +156,7 @@ if (-not (Test-Path $Global:MFTECmdFolder)) {
 }
 
 if (Test-Path $MFTECmdExePath) {
-    Write-Host "MFTECmd is already present at $MFTECmdExePath"
+    Info "MFTECmd is already present at $MFTECmdExePath"
 }
 else {
 	Info "Downloading MFTECmd..."
@@ -173,9 +173,28 @@ else {
 	catch {
 		Error "Error downloading or extracting MFTECmd: $($_.Exception.Message)"
 		return
-	}
-	
+	}	
 }
+
+$machinePath = [System.Environment]::GetEnvironmentVariable('Path','Machine')
+if (-not ($machinePath -split ";" | Where-Object { $_.Trim() -eq $Global:MFTECmdFolder })) {
+    Info "Adding $Global:MFTECmdFolder to system PATH ..."
+    
+	[System.Environment]::SetEnvironmentVariable(
+        "Path",
+        "$machinePath;$Global:MFTECmdFolder",
+        "Machine"
+    )
+
+    $env:Path += ";$Global:MFTECmdFolder"
+    
+	Warning "$Global:MFTECmdFolder added to PATH (current session + permanent)."
+    Warning "Restart PowerShell or log off/on for permanent PATH changes to fully apply."
+}
+else {
+    Success "$Global:MFTECmdFolder is already in PATH."
+}
+
 
 if ($Host.Name -eq 'ConsoleHost') {
 	Write-Host "Press ENTER to exit.." -ForegroundColor $Global:Yellow
