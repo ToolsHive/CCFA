@@ -195,6 +195,42 @@ else {
     Success "$Global:MFTECmdFolder is already in PATH."
 }
 
+Write-Host ""
+Write-Host "=============================================" -ForegroundColor $Global:CYAN
+Write-Host "Select an option:" -ForegroundColor $Global:GREEN
+Write-Host "=============================================" -ForegroundColor $Global:CYAN
+Write-Host "1. `$MFT" -ForegroundColor $Global:PURPLE
+Write-Host "2. `$MFTMirr" -ForegroundColor $Global:PURPLE
+Write-Host "=============================================" -ForegroundColor $Global:CYAN
+
+$choice = Read-Host "Enter your choice"
+
+switch ($choice) {
+    "1" {
+		Write-Host "Enter the path where `$MFT is located:" -ForegroundColor $Global:PURPLE -NoNewline
+        $Path = Read-Host
+        $FilePath = Join-Path $Path '$MFT'
+		$OutputFile = "MFT.csv"
+    }
+    "2" {
+		Write-Host "Enter the path where `$MFTMirr is located:" -ForegroundColor $Global:PURPLE -NoNewline
+        $Path = Read-Host
+        $FilePath = Join-Path $Path '$MFTMirr'
+		$OutputFile = "MFTMirr.csv"
+    }
+    Default {
+        Error "Invalid selection! Please run again."
+    }
+}
+
+Start-Process -FilePath "MFTECmd.exe" `
+    -ArgumentList @(
+        "-f", $FilePath,
+        "--csv", $Global:OutputDirectory,
+        "--csvf", $OutputFile
+    ) `
+    -Wait -NoNewWindow
+
 
 if ($Host.Name -eq 'ConsoleHost') {
 	Write-Host "Press ENTER to exit.." -ForegroundColor $Global:Yellow
